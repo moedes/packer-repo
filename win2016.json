@@ -1,0 +1,58 @@
+{
+     "builders": [
+        {"type": "vmware-iso",
+            "iso_url": "C:/Users/Jerry/Downloads/en_windows_server_2016_updated_feb_2018_x64_dvd_11636692.iso",
+            "iso_checksum": "7ADC82E00F1367B43897BB969A75BBF96D46F588",
+            "iso_checksum_type": "sha1",
+
+            "communicator": "winrm",
+            "winrm_username": "{{user 'winrm_username'}}",
+            "winrm_password": "{{user 'winrm_password'}}",
+            "winrm_port" : "5985",
+
+            "disk_type_id": "thin",
+         
+            "remote_type": "esx5",
+            "remote_host": "{{user 'remote_host'}}",
+            "remote_password": "{{user 'remote_password'}}",
+            "remote_username": "{{user 'remote_username'}}",
+            "remote_datastore": "PERC_R5_Internal",
+            "remote_cache_directory": "/",
+
+            "network_adapter_type": "e1000e",
+
+            "floppy_files": [
+                "C:/Users/Jerry/Documents/Autounattend.xml",
+                "C:/Users/Jerry/projects/packer-repo/scripts/Set-WinRM.ps1",
+                "C:/Users/Jerry/projects/packer-repo/scripts/Install-VMwareTools.ps1"
+            ],
+
+            "shutdown_command": "shutdown /s",
+
+            "keep_registered": "true",
+
+            "vmx_data" : {
+                "memsize" : "8192",
+                "numvcpus": "2",
+                "scsi0.virtualDev": "lsisas1068",
+                "ethernet0.networkName" : "VLAN_LAB"
+            },  
+
+            "vm_name": "packer"
+        }
+     ],
+
+     "provisioners": [
+        {
+            "type":"powershell",
+            "elevated_user": "{{user 'elevated_user'}}",
+            "elevated_password": "{{user 'elevated_password'}}",
+            "inline": [
+                "[Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}; [Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12; $webClient = New-Object System.Net.WebClient; $webClient.DownloadFile('https://pupmstr.homelab.local:8140/packages/current/install.ps1', 'c:/windows/temp/install.ps1'); c:/windows/temp/install.ps1",
+                "a:/Install-VMwareTools.ps1"
+            ]           
+        }
+     ]
+     
+}
+
