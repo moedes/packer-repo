@@ -24,13 +24,16 @@
             "floppy_files": [
                 "C:/Users/Jerry/projects/packer-repo/scripts/Autounattend.xml",
                 "C:/Users/Jerry/projects/packer-repo/scripts/Set-WinRM.ps1",
-                "C:/Users/Jerry/projects/packer-repo/scripts/Install-VMwareTools.ps1"
+                "C:/Users/Jerry/projects/packer-repo/scripts/Install-VMwareTools.ps1",
+                "C:/Users/Jerry/projects/packer-repo/scripts/SysprepOS.bat"
             ],
 
-            "shutdown_command": "shutdown /s",
+            "shutdown_command": "a:/SysprepOS.bat",
 
             "keep_registered": "true",
 
+            "output_directory": "win2016t",
+            
             "vmx_data" : {
                 "memsize" : "8192",
                 "numvcpus": "2",
@@ -38,7 +41,7 @@
                 "ethernet0.networkName" : "VLAN_LAB"
             },  
 
-            "vm_name": "packer"
+            "vm_name": "win2016t"
         }
      ],
 
@@ -48,9 +51,18 @@
             "elevated_user": "{{user `elevated_user`}}",
             "elevated_password": "{{user `elevated_password`}}",
             "inline": [
-                "[Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}; [Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12; $webClient = New-Object System.Net.WebClient; $webClient.DownloadFile('https://pupmstr.homelab.local:8140/packages/current/install.ps1', 'c:/windows/temp/install.ps1'); c:/windows/temp/install.ps1",
-                "a:/Install-VMwareTools.ps1"
-            ]           
+                "a:/Install-VMwareTools.ps1"              
+            ]
+        } 
+       
+     ],
+
+     "post-processors": [
+        {"type": "vsphere-template",
+            "host": "{{user `vcenter_server`}}",
+            "username": "{{user `vcenter_user`}}",
+            "password": "{{user `vcenter_password`}}",
+            "insecure": "true"
         }
      ]
      

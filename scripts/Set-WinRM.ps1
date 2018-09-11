@@ -10,6 +10,6 @@ winrm set winrm/config/service/auth '@{CredSSP="true"}'
 winrm set winrm/config/client '@{TrustedHosts="*"}'
 winrm set winrm/config/Listener?Address=*+Transport=HTTP '@{Port="5985"}'
 net stop winrm
-sc config winrm start= auto
+sc config "winrm" start= auto
 net start winrm
 
